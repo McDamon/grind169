@@ -2,45 +2,31 @@
 
 use std::{cell::RefCell, rc::Rc};
 
-// Definition for a binary tree node
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
+use crate::utils::tree_node::TreeNode;
 
-impl TreeNode {
-    #[inline]
-    #[allow(dead_code)]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
+struct Solution {}
+
+impl Solution {
+    pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
+        if let Some(r) = root {
+            let left = r.borrow().left.clone();
+            let right = r.borrow().right.clone();
+
+            r.borrow_mut().left = Self::invert_tree(right);
+            r.borrow_mut().right = Self::invert_tree(left);
+
+            return Some(r);
+        };
+        None
     }
-}
-
-#[allow(dead_code)]
-pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-    if let Some(r) = root {
-        let left = r.borrow().left.clone();
-        let right = r.borrow().right.clone();
-        
-        r.borrow_mut().left = invert_tree(right);
-        r.borrow_mut().right = invert_tree(left);
-
-        return Some(r);
-    };
-    None
 }
 
 #[cfg(test)]
 mod tests {
     use std::{cell::RefCell, rc::Rc};
 
-    use crate::grind::invert_binary_tree::{invert_tree, TreeNode};
+    use crate::grind::invert_binary_tree::Solution;
+    use crate::utils::tree_node::TreeNode;
 
     #[test]
     fn test_invert_tree_case1() {
@@ -82,7 +68,10 @@ mod tests {
         tree_invert_child_l1_2.borrow_mut().left = Some(tree_invert_child_l2_3);
         tree_invert_child_l1_2.borrow_mut().right = Some(tree_invert_child_l2_4);
 
-        assert_eq!(invert_tree(Some(tree_root)), Some(tree_invert_root));
+        assert_eq!(
+            Solution::invert_tree(Some(tree_root)),
+            Some(tree_invert_root)
+        );
     }
 
     #[test]
@@ -103,11 +92,14 @@ mod tests {
         tree_invert_root.borrow_mut().left = Some(tree_invert_child_l1_1);
         tree_invert_root.borrow_mut().right = Some(tree_invert_child_l1_2);
 
-        assert_eq!(invert_tree(Some(tree_root)), Some(tree_invert_root));
+        assert_eq!(
+            Solution::invert_tree(Some(tree_root)),
+            Some(tree_invert_root)
+        );
     }
 
     #[test]
     fn test_invert_tree_case3() {
-        assert_eq!(invert_tree(None), None);
+        assert_eq!(Solution::invert_tree(None), None);
     }
 }

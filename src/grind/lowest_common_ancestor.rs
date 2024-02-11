@@ -2,161 +2,144 @@
 
 use std::{cell::RefCell, rc::Rc};
 
-// Definition for a binary tree node
-#[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode {
-    pub val: i32,
-    pub left: Option<Rc<RefCell<TreeNode>>>,
-    pub right: Option<Rc<RefCell<TreeNode>>>,
-}
+use crate::utils::tree_node::TreeNode;
 
-impl TreeNode {
-    #[inline]
-    #[allow(dead_code)]
-    pub fn new(val: i32) -> Self {
-        TreeNode {
-            val,
-            left: None,
-            right: None,
-        }
-    }
-}
+struct Solution {}
 
-#[allow(dead_code)]
-pub fn lowest_common_ancestor(
-    root: Option<Rc<RefCell<TreeNode>>>,
-    p: Option<Rc<RefCell<TreeNode>>>,
-    q: Option<Rc<RefCell<TreeNode>>>,
-) -> Option<Rc<RefCell<TreeNode>>> {
-    // Storage for paths to our vals
-    let mut path_p: Vec<Option<Rc<RefCell<TreeNode>>>> = Vec::new();
-    let mut path_q: Vec<Option<Rc<RefCell<TreeNode>>>> = Vec::new();
+impl Solution {
+    pub fn lowest_common_ancestor(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        // Storage for paths to our vals
+        let mut path_p: Vec<Option<Rc<RefCell<TreeNode>>>> = Vec::new();
+        let mut path_q: Vec<Option<Rc<RefCell<TreeNode>>>> = Vec::new();
 
-    // Find a path to each value
-    let is_match_p = find_path(&mut path_p, root.clone(), p);
-    let is_match_q = find_path(&mut path_q, root, q);
+        // Find a path to each value
+        let is_match_p = Self::find_path(&mut path_p, root.clone(), p);
+        let is_match_q = Self::find_path(&mut path_q, root, q);
 
-    // If we have a match for both, then compare each path
-    if is_match_p || is_match_q {
-        let mut path1_ptr = path_p.clone();
-        let mut path2_ptr = path_q.clone();
+        // If we have a match for both, then compare each path
+        if is_match_p || is_match_q {
+            let mut path1_ptr = path_p.clone();
+            let mut path2_ptr = path_q.clone();
 
-        // now 1 is the largest
-        if path1_ptr.len() < path2_ptr.len() {
-            std::mem::swap(&mut path1_ptr, &mut path2_ptr);
-        }
-
-        let mut mismatch_index = 0;
-        for (i, path_tup) in path1_ptr
-            .iter()
-            .zip(path2_ptr.iter().chain(std::iter::repeat(&None)))
-            .enumerate()
-        {
-            match path_tup {
-                (None, None) => (),
-                (None, Some(_)) => (),
-                (Some(_), None) => {
-                    if i != 0 {
-                        mismatch_index = i;
-                        break;
-                    }
-                }
-                (Some(x), Some(y)) => {
-                    if x != y {
-                        mismatch_index = i;
-                        break;
-                    }
-                }
-            };
-        }
-
-        match mismatch_index.cmp(&0) {
-            std::cmp::Ordering::Equal => {
-                let val = path1_ptr[0].clone().unwrap().borrow().val;
-                return Some(Rc::new(RefCell::new(TreeNode::new(val))));
+            // now 1 is the largest
+            if path1_ptr.len() < path2_ptr.len() {
+                std::mem::swap(&mut path1_ptr, &mut path2_ptr);
             }
-            std::cmp::Ordering::Greater => {
-                let val = path1_ptr[mismatch_index - 1].clone().unwrap().borrow().val;
-                return Some(Rc::new(RefCell::new(TreeNode::new(val))));
+
+            let mut mismatch_index = 0;
+            for (i, path_tup) in path1_ptr
+                .iter()
+                .zip(path2_ptr.iter().chain(std::iter::repeat(&None)))
+                .enumerate()
+            {
+                match path_tup {
+                    (None, None) => (),
+                    (None, Some(_)) => (),
+                    (Some(_), None) => {
+                        if i != 0 {
+                            mismatch_index = i;
+                            break;
+                        }
+                    }
+                    (Some(x), Some(y)) => {
+                        if x != y {
+                            mismatch_index = i;
+                            break;
+                        }
+                    }
+                };
             }
-            std::cmp::Ordering::Less => (),
+
+            match mismatch_index.cmp(&0) {
+                std::cmp::Ordering::Equal => {
+                    let val = path1_ptr[0].clone().unwrap().borrow().val;
+                    return Some(Rc::new(RefCell::new(TreeNode::new(val))));
+                }
+                std::cmp::Ordering::Greater => {
+                    let val = path1_ptr[mismatch_index - 1].clone().unwrap().borrow().val;
+                    return Some(Rc::new(RefCell::new(TreeNode::new(val))));
+                }
+                std::cmp::Ordering::Less => (),
+            }
         }
+        None
     }
-    None
-}
 
-fn find_path(
-    path: &mut Vec<Option<Rc<RefCell<TreeNode>>>>,
-    root: Option<Rc<RefCell<TreeNode>>>,
-    x: Option<Rc<RefCell<TreeNode>>>,
-) -> bool {
-    if let Some(r) = &root {
-        let mut is_match_root = false;
-        let mut is_match_left = false;
-        let mut is_match_right = false;
+    fn find_path(
+        path: &mut Vec<Option<Rc<RefCell<TreeNode>>>>,
+        root: Option<Rc<RefCell<TreeNode>>>,
+        x: Option<Rc<RefCell<TreeNode>>>,
+    ) -> bool {
+        if let Some(r) = &root {
+            let mut is_match_root = false;
+            let mut is_match_left = false;
+            let mut is_match_right = false;
 
-        path.push(root.clone());
+            path.push(root.clone());
 
-        // If root val is same as our val then we match (node can be a descendant of itself)
-        if r.borrow().val == x.as_ref().unwrap().borrow().val {
-            is_match_root = true;
+            // If root val is same as our val then we match (node can be a descendant of itself)
+            if r.borrow().val == x.as_ref().unwrap().borrow().val {
+                is_match_root = true;
+            }
+
+            // Check if val is in left subtree
+            if let Some(_left) = &r.borrow().left {
+                is_match_left = Self::find_path(path, r.borrow().left.clone(), x.clone());
+            }
+
+            // Check if val is in right subtree
+            if let Some(_right) = &r.borrow().right {
+                is_match_right = Self::find_path(path, r.borrow().right.clone(), x);
+            }
+
+            if is_match_root || is_match_left || is_match_right {
+                return true;
+            } else {
+                path.pop();
+            }
         }
-
-        // Check if val is in left subtree
-        if let Some(_left) = &r.borrow().left {
-            is_match_left = find_path(path, r.borrow().left.clone(), x.clone());
-        }
-
-        // Check if val is in right subtree
-        if let Some(_right) = &r.borrow().right {
-            is_match_right = find_path(path, r.borrow().right.clone(), x);
-        }
-
-        if is_match_root || is_match_left || is_match_right {
-            return true;
-        } else {
-            path.pop();
-        }
+        false
     }
-    false
-}
 
+    pub fn lowest_common_ancestor_non_recursive(
+        root: Option<Rc<RefCell<TreeNode>>>,
+        p: Option<Rc<RefCell<TreeNode>>>,
+        q: Option<Rc<RefCell<TreeNode>>>,
+    ) -> Option<Rc<RefCell<TreeNode>>> {
+        let p_val = p.as_ref().unwrap().borrow().val;
+        let q_val = q.as_ref().unwrap().borrow().val;
+        let mut iterator = root;
+        let mut result = None;
 
-#[allow(dead_code)]
-pub fn lowest_common_ancestor_non_recursive(
-    root: Option<Rc<RefCell<TreeNode>>>,
-    p: Option<Rc<RefCell<TreeNode>>>,
-    q: Option<Rc<RefCell<TreeNode>>>,
-) -> Option<Rc<RefCell<TreeNode>>> {
-    let p_val = p.as_ref().unwrap().borrow().val;
-    let q_val = q.as_ref().unwrap().borrow().val;
-    let mut iterator = root;
-    let mut result = None;
+        while let Some(node) = iterator {
+            let mut node = node.borrow_mut();
+            let node_val = node.val;
+            result = Some(Rc::new(RefCell::new(TreeNode::new(node_val))));
+            if node_val > p_val && node_val > q_val {
+                iterator = node.left.take();
+                continue;
+            }
 
-    while let Some(node) = iterator {
-        let mut node = node.borrow_mut();
-        let node_val = node.val;
-        result = Some(Rc::new(RefCell::new(TreeNode::new(node_val))));
-        if node_val > p_val && node_val > q_val {
-            iterator = node.left.take();
-            continue;
+            if node_val < p_val && node_val < q_val {
+                iterator = node.right.take();
+                continue;
+            }
+            break;
         }
-
-        if node_val < p_val && node_val < q_val {
-            iterator = node.right.take();
-            continue;
-        }
-        break;
+        result
     }
-    result
 }
 
 #[cfg(test)]
 mod tests {
+
     use std::{cell::RefCell, rc::Rc};
 
-    use crate::grind::lowest_common_ancestor::lowest_common_ancestor;
-    use crate::grind::lowest_common_ancestor::TreeNode;
+    use crate::{grind::lowest_common_ancestor::Solution, utils::tree_node::TreeNode};
 
     fn new_test_tree() -> Rc<RefCell<TreeNode>> {
         let tree_root = Rc::new(RefCell::new(TreeNode::new(6)));
@@ -195,7 +178,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(8)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(6)));
 
-        let ans = lowest_common_ancestor(Some(test_tree), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(test_tree), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }
@@ -208,7 +191,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(4)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(2)));
 
-        let ans = lowest_common_ancestor(Some(test_tree), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(test_tree), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }
@@ -221,7 +204,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(5)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(2)));
 
-        let ans = lowest_common_ancestor(Some(test_tree), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(test_tree), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }
@@ -238,7 +221,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(1)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(2)));
 
-        let ans = lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }
@@ -255,7 +238,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(3)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(2)));
 
-        let ans = lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }
@@ -274,7 +257,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(1)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(2)));
 
-        let ans = lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }
@@ -297,7 +280,7 @@ mod tests {
         let q_node = Rc::new(RefCell::new(TreeNode::new(3)));
         let ans_node = Rc::new(RefCell::new(TreeNode::new(3)));
 
-        let ans = lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
+        let ans = Solution::lowest_common_ancestor(Some(tree_root), Some(p_node), Some(q_node));
 
         assert_eq!(ans, Some(ans_node));
     }

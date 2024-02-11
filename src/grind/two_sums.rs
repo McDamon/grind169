@@ -19,7 +19,8 @@ impl Solution {
                 for j in values {
                     if i as i32 != *j {
                         // Return our indices
-                        let result = vec![i as i32, *j];
+                        let mut result = vec![i as i32, *j];
+                        result.sort();
                         return result;
                     }
                 }
@@ -28,7 +29,20 @@ impl Solution {
                 continue;
             }
         }
-        vec![]
+        Vec::new()
+    }
+
+    // Naive O(n^2) solution
+    #[allow(dead_code)]
+    pub fn two_sum_naive(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        for (i, num_a) in nums.iter().enumerate() {
+            for (j, num_b) in nums.iter().enumerate() {
+                if num_a + num_b == target && i != j {
+                    return vec![i as i32, j as i32];
+                }
+            }
+        }
+        Vec::new()
     }
 }
 

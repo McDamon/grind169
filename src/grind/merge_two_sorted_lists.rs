@@ -1,18 +1,6 @@
 // https://leetcode.com/problems/merge-two-sorted-lists/
 
-// Definition for singly-linked list.
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub struct ListNode {
-    pub val: i32,
-    pub next: Option<Box<ListNode>>,
-}
-
-impl ListNode {
-    #[inline]
-    fn new(val: i32) -> Self {
-        ListNode { next: None, val }
-    }
-}
+use crate::utils::list_node::ListNode;
 
 struct Solution {}
 
@@ -70,7 +58,7 @@ impl Solution {
 
 #[cfg(test)]
 mod tests {
-    use crate::grind::merge_two_sorted_lists::{ListNode, Solution};
+    use crate::{grind::merge_two_sorted_lists::Solution, utils::list_node::ListNode};
 
     #[test]
     fn test_merge_two_lists_case1() {

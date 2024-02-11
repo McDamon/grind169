@@ -1,10 +1,11 @@
-mod two_sums;
-mod valid_parentheses;
-mod merge_two_sorted_lists;
+mod balanced_binary_tree;
 mod best_time_to_buy_and_sell_stock;
-mod valid_palindrome;
-mod invert_binary_tree;
-mod valid_anagram;
 mod binary_search;
 mod flood_fill;
+mod invert_binary_tree;
 mod lowest_common_ancestor;
+mod merge_two_sorted_lists;
+mod two_sums;
+mod valid_anagram;
+mod valid_palindrome;
+mod valid_parentheses;
