@@ -20,8 +20,7 @@ impl Solution {
         while low <= high {
             let mid = *low + (*high - *low) / 2;
             let is_bad_version = self.is_bad_version(mid);
-            //println!("low: {}, high: {}, mid: {}, is_bad_version: {}", low, high, mid, is_bad_version);
-            
+   
             // Check if bad version is present at mid
             if is_bad_version {
                 // ignore right half
