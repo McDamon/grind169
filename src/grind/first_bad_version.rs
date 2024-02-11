@@ -6,11 +6,7 @@ struct Solution {
 
 impl Solution {
     pub fn is_bad_version(&self, version: i32) -> bool {
-        if version >= self.bad {
-            true
-        } else {
-            false
-        }
+        version >= self.bad
     }
 
     pub fn first_bad_version(&self, n: i32) -> i32 {
