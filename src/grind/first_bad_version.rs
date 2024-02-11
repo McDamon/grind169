@@ -19,10 +19,9 @@ impl Solution {
         let mut guess = *high;
         while low <= high {
             let mid = *low + (*high - *low) / 2;
-            let is_bad_version = self.is_bad_version(mid);
    
             // Check if bad version is present at mid
-            if is_bad_version {
+            if self.is_bad_version(mid) {
                 // ignore right half
                 *high = mid - 1;
                 guess = mid;
