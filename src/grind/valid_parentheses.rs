@@ -93,17 +93,17 @@ mod tests {
     use crate::grind::valid_parentheses::Solution;
 
     #[test]
-    fn test_valid_parentheses_case1() {
+    fn test_is_valid_case1() {
         assert_eq!(true, Solution::is_valid("()".to_string()));
     }
 
     #[test]
-    fn test_valid_parentheses_case2() {
+    fn test_is_valid_case2() {
         assert_eq!(true, Solution::is_valid("()[]{}".to_string()));
     }
 
     #[test]
-    fn test_valid_parentheses_case3() {
+    fn test_is_valid_case3() {
         assert_eq!(false, Solution::is_valid("(]".to_string()));
     }
 }
